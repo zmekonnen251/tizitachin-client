@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import {
 	AppBar,
 	Avatar,
@@ -21,7 +22,12 @@ const Navbar = () => {
 
 	const user = useSelector((state) => state.auth.user);
 
+	const getCookie = () => {
+		const co = Cookies.get('access-token');
+		console.log(co);
+	};
 	useEffect(() => {
+		getCookie();
 		if (!user) dispatch(getUser());
 	}, [location, dispatch, user]);
 
