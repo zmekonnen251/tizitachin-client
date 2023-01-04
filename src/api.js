@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 export const API = axios.create(
 	{
 		// 	// https://memories-social-project-app.herokuapp.com/
-		baseURL: 'https://tizitachin-api.fly.dev',
+		baseURL: 'https://tizitachin-api.onrender.com',
 	},
 	{
 		withCredentials: true,
