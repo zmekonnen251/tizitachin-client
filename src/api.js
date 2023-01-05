@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import store from './redux/store';
 
 export const API = axios.create(
 	{
@@ -12,9 +13,11 @@ export const API = axios.create(
 
 API.interceptors.request.use(async (req) => {
 	const data = Cookies.get('access-token');
+	const { auth } = store.getState();
+	const { token } = auth;
 	if (data === 'loggedout' || data === undefined) return req;
 
-	req.headers.Authorization = `Bearer ${data}`;
+	req.headers.Authorization = `Bearer ${data || token}`;
 
 	return req;
 });

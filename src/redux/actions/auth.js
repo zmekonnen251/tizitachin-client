@@ -7,10 +7,10 @@ export const signIn = (formData, navigate) => async (dispatch) => {
 	try {
 		//log in the user..
 		const {
-			data: { user },
+			data: { user, accessToken },
 		} = await api.signIn(formData);
 
-		dispatch({ type: AUTH, payload: { user } });
+		dispatch({ type: AUTH, payload: { user, accessToken } });
 
 		navigate('/');
 	} catch (error) {
@@ -22,10 +22,11 @@ export const signUp = (formData, setMsg) => async (dispatch) => {
 	try {
 		//sign up the user..
 		const {
-			data: { message },
+			data: { message, user, accessToken },
 		} = await api.signUp(formData);
 
 		setMsg(message);
+		dispatch({ type: AUTH, payload: { user, accessToken } });
 	} catch (error) {
 		// console.log(error);
 	}
@@ -35,9 +36,9 @@ export const signInWithGoogle = (tokenId, navigate) => async (dispatch) => {
 	try {
 		//sign up the user..
 		const { data } = await api.signInWithGoogle(tokenId);
-		const { accessToken: token, user } = data;
+		const { accessToken, user } = data;
 
-		dispatch({ type: AUTH, payload: { token, user } });
+		dispatch({ type: AUTH, payload: { accessToken, user } });
 		navigate('/');
 	} catch (error) {
 		// console.log(error);
