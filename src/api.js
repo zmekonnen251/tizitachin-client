@@ -18,7 +18,7 @@ API.interceptors.request.use(async (req) => {
 
 	if (data === 'loggedout' || data === undefined) return req;
 
-	req.headers.Authorization = `Bearer ${token || data}`;
+	req.headers.Authorization = `Bearer ${token ? token : data}`;
 
 	return req;
 });
