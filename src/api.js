@@ -1,15 +1,21 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-export const API = axios.create();
-
-API.defaults.withCredentials = true;
+export const API = axios.create(
+	{
+		baseURL: 'https://tizitachin-api.onrender.com/api',
+	},
+	{
+		withCredentials: true,
+	}
+);
 
 API.interceptors.request.use(async (req) => {
 	const data = Cookies.get('access-token');
 	if (data === 'loggedout' || data === undefined) return req;
 
 	req.headers.Authorization = `Bearer ${data}`;
+
 	return req;
 });
 
