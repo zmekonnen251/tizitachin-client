@@ -2,12 +2,21 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import store from './redux/store';
 
-export const API = axios.create(
+const apiEndPoint = 'https://tizitachin-api.onrender.com/';
+
+// export const API = axios.create({
+// 	baseURL: apiEndPoint,
+// });
+
+const API = axios.create(
 	{
-		baseURL: 'https://tizitachin-api.onrender.com/api',
+		baseURL: apiEndPoint,
 	},
 	{
 		withCredentials: true,
+		headers: {
+			'Content-Type': 'application/json',
+		},
 	}
 );
 
@@ -15,10 +24,10 @@ API.interceptors.request.use(async (req) => {
 	const data = Cookies.get('access-token');
 	const { auth } = store.getState();
 	const { token } = auth;
+	console.log(token, data);
+	if (data === 'loggedout' || data === undefined || token === null) return req;
 
-	if (data === 'loggedout' || data === undefined) return req;
-
-	req.headers.Authorization = `Bearer ${token ? token : data}`;
+	req.headers.Authorization = `Bearer ${token}`;
 
 	return req;
 });
