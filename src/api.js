@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import store from './redux/store';
 
-const apiEndPoint = 'https://tizitachin-api.onrender.com/';
+const apiEndPoint = 'https://tizitachin-api.onrender.com';
 
 // export const API = axios.create({
 // 	baseURL: apiEndPoint,
