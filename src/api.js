@@ -15,9 +15,10 @@ API.interceptors.request.use(async (req) => {
 	const data = Cookies.get('access-token');
 	const { auth } = store.getState();
 	const { token } = auth;
+
 	if (data === 'loggedout' || data === undefined) return req;
 
-	req.headers.Authorization = `Bearer ${data || token}`;
+	req.headers.Authorization = `Bearer ${token || data}`;
 
 	return req;
 });
