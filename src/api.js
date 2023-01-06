@@ -24,8 +24,8 @@ API.interceptors.request.use(async (req) => {
 	const data = Cookies.get('access-token');
 	const { auth } = store.getState();
 	const { token } = auth;
-	console.log(token, data);
-	if (data === 'loggedout' || data === undefined || token === null) return req;
+
+	if (!token) return req;
 
 	req.headers.Authorization = `Bearer ${token}`;
 
