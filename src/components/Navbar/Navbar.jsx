@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 import {
 	AppBar,
@@ -13,18 +12,13 @@ import {
 import classes from './styles';
 import memoriesLogo from '../../assets/memories-Logo.png';
 import memoriesText from '../../assets/memories-Text.png';
-import { signOut, getUser } from '../../redux/actions/auth';
+import { signOut } from '../../redux/actions/auth';
+// import useLocalStorage from '../../hooks/useLocalStorage';
 
 const Navbar = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const location = useLocation();
-
-	const { user } = useSelector((state) => state.auth);
-
-	useEffect(() => {
-		if (!user) dispatch(getUser());
-	}, [location, dispatch, user]);
+	const profile = JSON.parse(localStorage.getItem('profile'));
 
 	return (
 		<AppBar sx={classes.appBar} position='static' color='inherit'>
@@ -38,13 +32,17 @@ const Navbar = () => {
 				/>
 			</NavLink>
 			<Toolbar sx={classes.toolbar}>
-				{user ? (
+				{profile?.user && profile?.accessToken ? (
 					<Box sx={classes.profile}>
-						<Avatar sx={classes.purple} alt={user.name} src={user.imageUrl}>
-							{user.name.charAt(0).toUpperCase()}
+						<Avatar
+							sx={classes.purple}
+							alt={profile?.user.name}
+							src={profile?.user.imageUrl}
+						>
+							{profile?.user.name.charAt(0).toUpperCase()}
 						</Avatar>
 						<Typography sx={classes.userName} variant='h6'>
-							{user.name}
+							{profile?.user.name}
 						</Typography>
 						<Button
 							variant='contained'

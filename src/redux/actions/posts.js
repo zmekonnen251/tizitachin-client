@@ -60,7 +60,7 @@ export const createPost = (post, navigate) => async (dispatch) => {
 		dispatch({ type: START_LOADING });
 
 		const { data } = await api.createPost(post);
-
+		console.log('data', data);
 		navigate(`/posts/${data._id}`);
 
 		dispatch({ type: CREATE, payload: data });
@@ -90,13 +90,14 @@ export const deletePost = (id) => async (dispatch) => {
 };
 
 export const likePost = (id) => async (dispatch) => {
-	const token = document.cookie.split('=')[1];
+	console.log('likePost', id);
 	try {
-		const { data } = await api.likePost(id, token);
+		const response = await api.likePost(id);
 
-		dispatch({ type: LIKE, payload: data });
+		console.log('data', response);
+		dispatch({ type: LIKE, payload: response.data });
 	} catch (error) {
-		// console.log(error);
+		console.log(error);
 	}
 };
 

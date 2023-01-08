@@ -1,14 +1,14 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
+import { refreshToken as refresh } from './redux/actions/auth';
 import store from './redux/store';
-
+// import decode from 'jwt-decode';
 const apiEndPoint = 'https://tizitachin-api.onrender.com/api';
 
-// export const API = axios.create({
-// 	baseURL: apiEndPoint,
-// });
+export const API = axios.create({
+	baseURL: apiEndPoint,
+});
 
-const API = axios.create(
+const privateAPI = axios.create(
 	{
 		baseURL: apiEndPoint,
 	},
@@ -20,17 +20,43 @@ const API = axios.create(
 	}
 );
 
-API.interceptors.request.use(async (req) => {
-	const data = Cookies.get('access-token');
-	const { auth } = store.getState();
-	const { token } = auth;
+privateAPI.interceptors.request.use(async (req) => {
+	const profile = JSON.parse(localStorage.getItem('profile'));
 
-	if (!token) return req;
+	if (!profile || !profile.accessToken) return req;
 
-	req.headers.Authorization = `Bearer ${token}`;
+	// const decodedToken = decode(profile.accessToken);
+
+	// if (decodedToken.exp * 1000 < new Date().getTime()) {
+	// 	console.log('refreshing token');
+	// 	store.dispatch(refresh());
+
+	// 	const newProfile = JSON.parse(localStorage.getItem('profile'));
+	// 	req.headers.Authorization = `Bearer ${newProfile.accessToken}`;
+	// 	return req;
+	// }
+
+	req.headers.Authorization = `Bearer ${profile.accessToken}`;
 
 	return req;
 });
+
+privateAPI.interceptors.response.use(
+	(res) => res,
+	(error) => {
+		if (
+			error.response.status === 401 &&
+			error.response.data.message === 'jwt expired'
+		) {
+			store.dispatch(refresh());
+		} else if (error.response.status === 401) {
+			localStorage.clear();
+			store.dispatch({ type: 'LOGOUT' });
+			window.location.reload('/auth');
+		}
+		return Promise.reject(error);
+	}
+);
 
 export const fetchPost = (id) => API.get(`/posts/${id}`);
 export const fetchPosts = (page) => API.get(`/posts/?page=${page}`);
@@ -40,18 +66,20 @@ export const fetchPostsBySearch = (searchQuery) =>
 			searchQuery.tags
 		}`
 	);
-export const createPost = (newPost) => API.post('/posts', newPost);
+export const createPost = (newPost) => privateAPI.post('/posts', newPost);
 export const updatePost = (id, updatedPost) =>
-	API.patch(`/posts/${id}`, updatedPost);
-export const deletePost = (id) => API.delete(`/posts/${id}`);
-export const likePost = (id) => API.patch(`/posts/${id}/likePost`);
+	privateAPI.patch(`/posts/${id}`, updatedPost);
+export const deletePost = (id) => privateAPI.delete(`/posts/${id}`);
+export const likePost = (id) => privateAPI.patch(`/posts/${id}/likePost`);
 export const comment = (value, id) =>
-	API.post(`/posts/${id}/commentPost`, { value });
+	privateAPI.post(`/posts/${id}/commentPost`, { value });
 export const signIn = (formData) => API.post(`/users/signin`, formData);
-export const signUp = (formData) => API.post(`/users/signup`, formData);
-export const signOut = () => API.get(`/users/signout`);
+export const signUp = (formData) => privateAPI.post(`/users/signup`, formData);
+export const signOut = () => privateAPI.get(`/users/signout`);
 export const signInWithGoogle = (tokenId) =>
 	API.post(`/users/google`, { tokenId });
 
 export const verifyEmail = (id, token) =>
 	API.get(`/users/${id}/confirmation/${token}`);
+
+export const refreshToken = () => privateAPI.get('/users/refresh');

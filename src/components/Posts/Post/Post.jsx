@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { deletePost, likePost } from '../../../redux/actions/posts';
 
 import {
@@ -23,11 +23,11 @@ import classes from './styles';
 const Post = ({ post, setCurrentId }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const user = useSelector((state) => state.auth.user);
+	const profile = JSON.parse(localStorage.getItem('profile'));
 
 	const Likes = () => {
 		if (post['likes'] !== undefined && post.likes.length > 0) {
-			return post.likes.find((like) => like === user?._id) ? (
+			return post.likes.find((like) => like === profile?.user?._id) ? (
 				<div
 					style={{
 						maxHeight: '200px',
@@ -101,7 +101,7 @@ const Post = ({ post, setCurrentId }) => {
 						{moment(post.createdAt).fromNow()}
 					</Typography>
 				</Box>
-				{user?._id === post?.creator && (
+				{profile?.user?._id === post?.creator && (
 					<Box sx={classes.overlay2}>
 						<Button
 							onClick={(e) => {
@@ -145,14 +145,14 @@ const Post = ({ post, setCurrentId }) => {
 				<Button
 					size='small'
 					color='primary'
-					disabled={!user}
+					disabled={!profile?.user}
 					onClick={() => {
 						dispatch(likePost(post._id));
 					}}
 				>
 					<Likes />
 				</Button>
-				{user?._id === post?.creator && (
+				{profile?.user?._id === post?.creator && (
 					<Button
 						size='small'
 						color='error'

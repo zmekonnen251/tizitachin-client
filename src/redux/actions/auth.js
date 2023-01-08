@@ -1,7 +1,7 @@
 import { AUTH, LOGOUT } from '../actionTypes';
 import * as api from '../../api';
-import decode from 'jwt-decode';
-import Cookies from 'js-cookie';
+// import decode from 'jwt-decode';
+// import Cookies from 'js-cookie';
 
 export const signIn = (formData, navigate) => async (dispatch) => {
 	try {
@@ -48,7 +48,7 @@ export const signInWithGoogle = (tokenId, navigate) => async (dispatch) => {
 export const signOut = (navigate, setUser) => async (dispatch) => {
 	try {
 		const res = await api.signOut();
-		if (res.status === 204) {
+		if (res.status === 200) {
 			dispatch({ type: LOGOUT });
 			navigate('/auth');
 		}
@@ -75,27 +75,39 @@ export const verifyEmail = (id, token, setValidUrl) => async (dispatch) => {
 	}
 };
 
-export const getUser = () => async (dispatch) => {
+// export const getUser = () => async (dispatch) => {
+// 	try {
+// 		const data = Cookies.get('access-token');
+// 		if (data === 'loggedout' || data === undefined)
+// 			return dispatch({ type: LOGOUT });
+
+// 		const token = data;
+
+// 		const decodedUser = decode(token);
+
+// 		dispatch({
+// 			type: AUTH,
+// 			payload: {
+// 				user: {
+// 					name: decodedUser?.name,
+// 					email: decodedUser?.email,
+// 					_id: decodedUser?._id,
+// 					imageUrl: decodedUser?.imageUrl,
+// 				},
+// 			},
+// 		});
+// 	} catch (error) {
+// 		// console.log(error);
+// 	}
+// };
+
+export const refreshToken = () => async (dispatch) => {
 	try {
-		const data = Cookies.get('access-token');
-		if (data === 'loggedout' || data === undefined)
-			return dispatch({ type: LOGOUT });
+		const {
+			data: { user, accessToken },
+		} = await api.refreshToken();
 
-		const token = data;
-
-		const decodedUser = decode(token);
-
-		dispatch({
-			type: AUTH,
-			payload: {
-				user: {
-					name: decodedUser?.name,
-					email: decodedUser?.email,
-					_id: decodedUser?._id,
-					imageUrl: decodedUser?.imageUrl,
-				},
-			},
-		});
+		dispatch({ type: AUTH, payload: { accessToken, user } });
 	} catch (error) {
 		// console.log(error);
 	}

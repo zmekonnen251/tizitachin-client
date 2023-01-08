@@ -17,7 +17,7 @@ import { createPost, updatePost } from '../../redux/actions/posts.js';
 const Form = ({ currentId, setCurrentId }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const user = useSelector((state) => state.auth?.user);
+	const profile = JSON.parse(localStorage.getItem('profile'));
 	const [postData, setPostData] = useState({
 		title: '',
 		message: '',
@@ -30,7 +30,7 @@ const Form = ({ currentId, setCurrentId }) => {
 
 	useEffect(() => {
 		if (post) setPostData(post);
-	}, [post]);
+	}, [post, currentId]);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -39,9 +39,13 @@ const Form = ({ currentId, setCurrentId }) => {
 			tags: postData.tags.join(','),
 		};
 		if (currentId) {
-			dispatch(updatePost(currentId, { ...postDataInput, name: user?.name }));
+			dispatch(
+				updatePost(currentId, { ...postDataInput, name: profile?.user?.name })
+			);
 		} else {
-			dispatch(createPost({ ...postDataInput, name: user?.name }, navigate));
+			dispatch(
+				createPost({ ...postDataInput, name: profile?.user?.name }, navigate)
+			);
 		}
 		handleClear();
 	};
@@ -50,12 +54,12 @@ const Form = ({ currentId, setCurrentId }) => {
 		setPostData({
 			title: '',
 			message: '',
-			tags: '',
+			tags: [],
 			selectedFile: '',
 		});
 	};
 
-	if (!user?.name) {
+	if (!profile?.user) {
 		return (
 			<Paper sx={classes.paper} elevation={6}>
 				<Typography variant='h6' align='center'>
@@ -110,7 +114,7 @@ const Form = ({ currentId, setCurrentId }) => {
 						setPostData({ ...postData, tags: [...postData.tags, value] })
 					}
 					// id='tags-filled'
-					options={postData.tags.map((option) => option)}
+					options={postData.tags?.map((option) => option)}
 					// defaultValue={[top100Films[13].title]}
 					freeSolo
 					renderTags={(value, getTagProps) =>

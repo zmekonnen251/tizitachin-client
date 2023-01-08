@@ -18,7 +18,7 @@ const CommentSection = ({ post }) => {
 
 		setComment('');
 		setComments(newComments);
-
+		console.log(comments);
 		commentsRef.current.scrollIntoView({ behavior: 'smooth' });
 	};
 
