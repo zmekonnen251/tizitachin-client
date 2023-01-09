@@ -2,7 +2,7 @@ import axios from 'axios';
 import { refreshToken as refresh } from './redux/actions/auth';
 import store from './redux/store';
 // import decode from 'jwt-decode';
-const apiEndPoint = 'https://tizitachin-api.onrender.com/api';
+const apiEndPoint = '/api';
 
 export const API = axios.create({
 	baseURL: apiEndPoint,
